@@ -448,8 +448,9 @@ export class Task {
      * task is not recurring, it will return `[toggled]`.
      */
     public toggle(): Task[] {
-        const newStatus: Status =
-            this.status === Status.Todo ? Status.Done : Status.Todo;
+        const statuses = [Status.Todo, Status.Done, Status.Touched];
+        const newStatus =
+            statuses[(statuses.indexOf(this.status) + 1) % statuses.length];
 
         let newDoneDate = null;
 

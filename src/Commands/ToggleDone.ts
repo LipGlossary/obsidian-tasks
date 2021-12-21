@@ -109,7 +109,9 @@ const toggleChecklistItem = ({
     const statusString = regexMatch[2];
     const body = regexMatch[3];
 
-    const toggledStatusString = statusString === Marker.Todo ? Marker.Done : Marker.Todo;
+    const markers = [Marker.Todo, Marker.Done, Marker.Touched];
+    const toggledStatusString =
+        markers[(markers.indexOf(statusString) + 1) % markers.length];
 
     const toggledLine = `${indentation}- [${toggledStatusString}] ${body}`;
 
