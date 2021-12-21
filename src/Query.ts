@@ -26,6 +26,13 @@ export class Query {
     private readonly priorityRegexp =
         /^priority (is )?(above|below)? ?(low|none|medium|high)/;
 
+    private readonly todoString = 'to do';
+    private readonly notTodoString = 'not to do';
+    private readonly touchedString = 'touched';
+    private readonly notTouchedString = 'not touched';
+    private readonly doneString = 'done';
+    private readonly notDoneString = 'not done';
+
     private readonly noStartString = 'no start date';
     private readonly startRegexp = /^starts (before|after|on)? ?(.*)/;
 
@@ -35,8 +42,7 @@ export class Query {
     private readonly noDueString = 'no due date';
     private readonly dueRegexp = /^due (before|after|on)? ?(.*)/;
 
-    private readonly doneString = 'done';
-    private readonly notDoneString = 'not done';
+    private readonly noDoneString = 'no done date';
     private readonly doneRegexp = /^done (before|after|on)? ?(.*)/;
 
     private readonly pathRegexp = /^path (includes|does not include) (.*)/;
@@ -65,6 +71,26 @@ export class Query {
             .forEach((line: string) => {
                 switch (true) {
                     case line === '':
+                        break;
+                    case line === this.todoString:
+                        this._filters.push(
+                            (task) => task.status === Status.Todo,
+                        );
+                        break;
+                    case line === this.notTodoString:
+                        this._filters.push(
+                            (task) => task.status !== Status.Todo,
+                        );
+                        break;
+                    case line === this.touchedString:
+                        this._filters.push(
+                            (task) => task.status === Status.Touched,
+                        );
+                        break;
+                    case line === this.notTouchedString:
+                        this._filters.push(
+                            (task) => task.status !== Status.Touched,
+                        );
                         break;
                     case line === this.doneString:
                         this._filters.push(
@@ -95,6 +121,9 @@ export class Query {
                         break;
                     case line === this.noDueString:
                         this._filters.push((task) => task.dueDate === null);
+                        break;
+                    case line === this.noDoneString:
+                        this._filters.push((task) => task.doneDate === null);
                         break;
                     case this.shortModeRegexp.test(line):
                         this._layoutOptions.shortMode = true;

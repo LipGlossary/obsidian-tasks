@@ -9,8 +9,26 @@ import { Urgency } from './Urgency';
 
 export enum Status {
     Todo = 'Todo',
+    Touched = 'Touched',
     Done = 'Done',
 }
+
+// KEY:
+// | char    | NAME      | COMPLETE? | STARTED? | CHECKED? |     VISUAL     |
+// |---------|-----------|-----------|----------|----------|----------------|
+// | <space> | untouched | no        | no       | no       | native         |
+// | .       | touched   | no        |      yes | no       | native + to-do |
+// | x       | complete  |       yes |      yes |    yes   | native         |
+export const Marker = ((E: { [key: string]: string }) => {
+    [
+        [Status.Todo, ' '],
+        [Status.Touched, '.'],
+        [Status.Done, 'x'],
+    ].forEach(([k, v]) => {
+        E[(E[k] = v)] = k;
+    });
+    return E;
+})({});
 
 // Sort low below none.
 export enum Priority {
@@ -114,6 +132,10 @@ export class Task {
         this.blockLink = blockLink;
     }
 
+    public static statusFromString({ statusString }: { statusString: string }) {
+        return (Marker[statusString] as Status) || Status.Todo;
+    }
+
     public static fromLine({
         line,
         path,
@@ -134,15 +156,7 @@ export class Task {
 
         const indentation = regexMatch[1];
         const statusString = regexMatch[2].toLowerCase();
-
-        let status: Status;
-        switch (statusString) {
-            case ' ':
-                status = Status.Todo;
-                break;
-            default:
-                status = Status.Done;
-        }
+        const status = Task.statusFromString({ statusString });
 
         // match[3] includes the whole body of the task after the brackets.
         const body = regexMatch[3].trim();
@@ -327,7 +341,7 @@ export class Task {
         const checkbox = li.createEl('input');
         checkbox.addClass('task-list-item-checkbox');
         checkbox.type = 'checkbox';
-        if (this.status !== Status.Todo) {
+        if (this.status === Status.Done) {
             checkbox.checked = true;
             li.addClass('is-checked');
         }
@@ -458,7 +472,7 @@ export class Task {
             ...this,
             status: newStatus,
             doneDate: newDoneDate,
-            originalStatusCharacter: newStatus === Status.Done ? 'x' : ' ',
+            originalStatusCharacter: Marker[newStatus],
         });
 
         const newTasks: Task[] = [];

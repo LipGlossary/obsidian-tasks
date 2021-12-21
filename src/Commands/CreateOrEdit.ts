@@ -85,7 +85,7 @@ const taskFromLine = ({ line, path }: { line: string; path: string }): Task => {
 
     const indentation: string = nonTaskMatch[1];
     const statusString: string = nonTaskMatch[3] ?? ' ';
-    const status = statusString === ' ' ? Status.Todo : Status.Done;
+    const status = Task.statusFromString({ statusString });
     let description: string = nonTaskMatch[4];
 
     const blockLinkMatch = line.match(Task.blockLinkRegex);

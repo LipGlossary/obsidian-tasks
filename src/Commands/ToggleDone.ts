@@ -1,6 +1,6 @@
 import { Editor, MarkdownView, View } from 'obsidian';
 
-import { Task } from '../Task';
+import { Marker, Task } from '../Task';
 
 export const toggleDone = (checking: boolean, editor: Editor, view: View) => {
     if (checking) {
@@ -75,7 +75,10 @@ const toggleLine = ({ line, path }: { line: string; path: string }): string => {
             const listItemRegex = /^([\s\t]*)([-*])/;
             if (listItemRegex.test(line)) {
                 // Let's convert the list item to a checklist item.
-                toggledLine = line.replace(listItemRegex, '$1$2 [ ]');
+                toggledLine = line.replace(
+                    listItemRegex,
+                    `$1$2 [${Marker.Todo}]`,
+                );
             } else {
                 // Let's convert the line to a list item.
                 toggledLine = line.replace(/^([\s\t]*)/, '$1- ');
@@ -103,10 +106,10 @@ const toggleChecklistItem = ({
 }): string => {
     // It's a checklist item, let's toggle it.
     const indentation = regexMatch[1];
-    const statusString = regexMatch[2].toLowerCase();
+    const statusString = regexMatch[2];
     const body = regexMatch[3];
 
-    const toggledStatusString = statusString === ' ' ? 'x' : ' ';
+    const toggledStatusString = statusString === Marker.Todo ? Marker.Done : Marker.Todo;
 
     const toggledLine = `${indentation}- [${toggledStatusString}] ${body}`;
 
