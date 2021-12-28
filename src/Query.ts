@@ -33,6 +33,13 @@ export class Query {
     private readonly doneString = 'done';
     private readonly notDoneString = 'not done';
 
+    private readonly checkedString = 'checked';
+    private readonly notCheckedString = 'not checked';
+    private readonly startedString = 'started';
+    private readonly notStartedString = 'not started';
+    private readonly completeString = 'complete';
+    private readonly notCompleteString = 'not complete';
+
     private readonly noStartString = 'no start date';
     private readonly startRegexp = /^starts (before|after|on)? ?(.*)/;
 
@@ -73,11 +80,13 @@ export class Query {
                     case line === '':
                         break;
                     case line === this.todoString:
+                    case line === this.notStartedString:
                         this._filters.push(
                             (task) => task.status === Status.Todo,
                         );
                         break;
                     case line === this.notTodoString:
+                    case line === this.startedString:
                         this._filters.push(
                             (task) => task.status !== Status.Todo,
                         );
@@ -93,11 +102,15 @@ export class Query {
                         );
                         break;
                     case line === this.doneString:
+                    case line === this.checkedString:
+                    case line === this.completeString:
                         this._filters.push(
                             (task) => task.status === Status.Done,
                         );
                         break;
                     case line === this.notDoneString:
+                    case line === this.notCheckedString:
+                    case line === this.notCompleteString:
                         this._filters.push(
                             (task) => task.status !== Status.Done,
                         );

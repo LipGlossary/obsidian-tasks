@@ -10,7 +10,13 @@ import { Urgency } from './Urgency';
 export enum Status {
     Todo = 'Todo',
     Touched = 'Touched',
+    Bumped = 'Bumped',
+    Continued = 'Continued',
+    Canceled = 'Canceled',
+    Expired = 'Expired',
+    Obviated = 'Obviated',
     Done = 'Done',
+    Unknown = 'Unknown',
 }
 
 // KEY:
@@ -18,12 +24,25 @@ export enum Status {
 // |---------|-----------|-----------|----------|----------|----------------|
 // | <space> | untouched | no        | no       | no       | native         |
 // | .       | touched   | no        |      yes | no       | native + to-do |
+// | -       | bumped    | no        | no       |    yes * |   none + to-do |
+// | ^       | continued | no        |      yes |    yes * |   none + to-do |
+// | \       | canceled  | no        | no       |    yes   |   none + to-do |
+// | /       | expired   | no        |      yes |    yes   | native + done  |
+// | *       | obviated  |       yes | no       |    yes   |                |
 // | x       | complete  |       yes |      yes |    yes   | native         |
+// | ?       | unknown   |    any    |   any    |    yes   |                |
+// ^ assume a new version or recurrence of the task was created (or unnecessary)
 export const Marker = ((E: { [key: string]: string }) => {
     [
         [Status.Todo, ' '],
         [Status.Touched, '.'],
+        [Status.Bumped, '-'],
+        [Status.Continued, '^'],
+        [Status.Canceled, '\\'],
+        [Status.Expired, '/'],
+        [Status.Obviated, '*'],
         [Status.Done, 'x'],
+        [Status.Unknown, '?'],
     ].forEach(([k, v]) => {
         E[(E[k] = v)] = k;
     });
